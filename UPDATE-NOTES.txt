@@ -1,0 +1,26 @@
+ZABIBU SITE — COMPLETE UPDATE
+
+Included changes:
+- Every destination card links to its own destination page.
+- Every experience links to a dedicated page with a gallery.
+- The Journal contains eight complete articles with working detail links.
+- The Contact page includes the Njiro BP, Arusha Google map.
+- The Booking page has the redesigned premium glass layout.
+- Dynamic destination, experience and journal routes use non-nested TanStack filenames:
+  destinations_.$slug.tsx
+  experiences_.$slug.tsx
+  journal_.$slug.tsx
+
+Run the project:
+1. npm install
+2. npm run dev
+
+TanStack Router will automatically regenerate src/routeTree.gen.ts when the dev server or build starts.
+
+Useful test links:
+/journal/matemwe-tide-notes
+/journal/a-week-on-the-northern-circuit
+/experiences/safari-journeys
+/experiences/private-dining
+/destinations/arusha
+/destinations/stone-town

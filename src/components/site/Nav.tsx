@@ -29,8 +29,24 @@ const links: {
 export function Nav({ transparent: _transparent = false }: NavProps) {
   const [open, setOpen] = useState(false);
   const [destOpen, setDestOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Close the mobile menu with Escape and prevent background scrolling.
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     if (!open) return;
 
@@ -53,191 +69,266 @@ export function Nav({ transparent: _transparent = false }: NavProps) {
 
   return (
     <>
-      {/* Desktop and mobile header */}
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4">
-        <div
-          className={[
-            "pointer-events-auto mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4",
-            "rounded-2xl border border-white/35 bg-white/20 text-black",
-            "shadow-[0_18px_55px_-24px_rgba(0,0,0,0.45)]",
-            "backdrop-blur-2xl backdrop-saturate-150",
-            "sm:h-[4.5rem] sm:px-6",
-          ].join(" ")}
-        >
-          {/* Logo */}
+      {/* =========================
+          DESKTOP / MOBILE HEADER
+      ========================== */}
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 sm:pt-5">
+        <div className="pointer-events-auto mx-auto flex max-w-[1380px] items-center justify-between">
+
+          {/* LOGO PILL */}
           <Link
             to="/"
             aria-label="Zabibu Collection home"
-            className="group flex min-w-0 items-center gap-2.5 sm:gap-3"
+            className={[
+              "group flex h-[58px] items-center gap-3 rounded-full",
+              "border border-white/35 px-2.5 pr-5",
+              "backdrop-blur-2xl backdrop-saturate-150",
+              "transition-all duration-500",
+              scrolled
+                ? "bg-white/80 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)]"
+                : "bg-white/35 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.35)]",
+            ].join(" ")}
           >
             <img
               src={logo}
               alt="Zabibu"
               className={[
-                "h-9 w-9 shrink-0 rounded-full object-cover",
-                "ring-1 ring-white/60",
-                "transition-transform duration-300 group-hover:scale-105",
-                "sm:h-10 sm:w-10",
+                "h-10 w-10 shrink-0 rounded-full object-cover",
+                "ring-1 ring-black/5",
+                "transition-transform duration-500",
+                "group-hover:scale-105",
               ].join(" ")}
             />
 
-            <span className="font-display text-xl leading-none tracking-tight sm:text-2xl">
-              Zabibu
-            </span>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-xl leading-none tracking-tight text-black">
+                Zabibu
+              </span>
 
-            <span className="hidden text-[0.6rem] uppercase tracking-[0.26em] opacity-65 sm:inline">
-              Collection
-            </span>
+              <span className="hidden text-[0.52rem] uppercase tracking-[0.25em] text-black/50 sm:block">
+                Collection
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop links */}
-          <nav
-            aria-label="Primary navigation"
-            className="hidden items-center gap-1 lg:flex"
+          {/* =========================
+              CENTER PILL NAVIGATION
+          ========================== */}
+          <div
+            className={[
+              "absolute left-1/2 hidden -translate-x-1/2 lg:block",
+              "rounded-full border border-white/35",
+              "backdrop-blur-2xl backdrop-saturate-150",
+              "transition-all duration-500",
+              scrolled
+                ? "bg-white/80 shadow-[0_14px_45px_-18px_rgba(0,0,0,0.35)]"
+                : "bg-white/35 shadow-[0_14px_45px_-20px_rgba(0,0,0,0.3)]",
+            ].join(" ")}
           >
-            {links.map((link) =>
-              link.hasMenu ? (
-                <div
-                  key={link.to}
-                  className="relative"
-                  onMouseEnter={() => setDestOpen(true)}
-                  onMouseLeave={() => setDestOpen(false)}
-                >
-                  <Link
-                    to={link.to}
-                    className={[
-                      "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2",
-                      "text-[0.7rem] font-medium uppercase tracking-[0.13em]",
-                      "transition-colors hover:bg-white/30",
-                    ].join(" ")}
-                  >
-                    {link.label}
-
-                    <ChevronDown
-                      size={13}
-                      className={[
-                        "transition-transform duration-200",
-                        destOpen ? "rotate-180" : "",
-                      ].join(" ")}
-                    />
-                  </Link>
-
-                  {/* Glassy destinations dropdown */}
+            <nav
+              aria-label="Primary navigation"
+              className="flex h-[58px] items-center gap-0.5 p-1.5"
+            >
+              {links.map((link) =>
+                link.hasMenu ? (
                   <div
-                    className={[
-                      "absolute left-1/2 top-full w-[360px] -translate-x-1/2 pt-3",
-                      "transition-all duration-200",
-                      destOpen
-                        ? "visible translate-y-0 opacity-100"
-                        : "invisible -translate-y-1 opacity-0",
-                    ].join(" ")}
+                    key={link.to}
+                    className="relative"
+                    onMouseEnter={() => setDestOpen(true)}
+                    onMouseLeave={() => setDestOpen(false)}
                   >
-                    <div
+                    <Link
+                      to={link.to}
                       className={[
-                        "rounded-2xl border border-white/40 bg-white/30 p-5",
-                        "text-black backdrop-blur-2xl backdrop-saturate-150",
-                        "shadow-[0_24px_70px_-28px_rgba(0,0,0,0.48)]",
+                        "inline-flex h-[46px] items-center gap-1.5",
+                        "rounded-full px-4",
+                        "text-[0.65rem] font-medium uppercase",
+                        "tracking-[0.12em] text-black/75",
+                        "transition-all duration-300",
+                        "hover:bg-black hover:text-white",
                       ].join(" ")}
                     >
-                      <div className="mb-3 text-[0.62rem] font-medium uppercase tracking-[0.22em] opacity-60">
-                        Explore Tanzania
-                      </div>
+                      {link.label}
 
-                      <ul className="grid grid-cols-2 gap-1">
-                        {destinations.map((destination) => (
-                          <li key={destination.slug}>
+                      <ChevronDown
+                        size={12}
+                        strokeWidth={1.8}
+                        className={[
+                          "transition-transform duration-300",
+                          destOpen ? "rotate-180" : "",
+                        ].join(" ")}
+                      />
+                    </Link>
+
+                    {/* DESTINATIONS DROPDOWN */}
+                    <div
+                      className={[
+                        "absolute left-1/2 top-full",
+                        "w-[380px] -translate-x-1/2 pt-4",
+                        "transition-all duration-300",
+                        destOpen
+                          ? "visible translate-y-0 opacity-100"
+                          : "invisible -translate-y-2 opacity-0",
+                      ].join(" ")}
+                    >
+                      <div
+                        className={[
+                          "overflow-hidden rounded-[28px]",
+                          "border border-white/50",
+                          "bg-white/85 p-3",
+                          "shadow-[0_30px_80px_-25px_rgba(0,0,0,0.35)]",
+                          "backdrop-blur-3xl backdrop-saturate-150",
+                        ].join(" ")}
+                      >
+                        <div className="px-4 pb-3 pt-2">
+                          <p className="text-[0.58rem] font-medium uppercase tracking-[0.24em] text-black/40">
+                            Explore Tanzania
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-1">
+                          {destinations.map((destination) => (
                             <Link
+                              key={destination.slug}
                               to="/destinations/$slug"
                               params={{
                                 slug: destination.slug,
                               }}
-                              className="block rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-white/35"
+                              className={[
+                                "rounded-2xl px-4 py-3",
+                                "text-sm text-black/75",
+                                "transition-all duration-200",
+                                "hover:bg-black hover:text-white",
+                              ].join(" ")}
                             >
                               {destination.name}
                             </Link>
-                          </li>
-                        ))}
-                      </ul>
+                          ))}
+                        </div>
+
+                        <div className="mt-2 border-t border-black/5 p-2">
+                          <Link
+                            to="/destinations"
+                            className={[
+                              "flex items-center justify-center",
+                              "rounded-2xl py-3",
+                              "text-[0.62rem] font-medium uppercase",
+                              "tracking-[0.16em]",
+                              "transition-colors",
+                              "hover:bg-black/5",
+                            ].join(" ")}
+                          >
+                            View all destinations
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  activeOptions={{
-                    exact: link.to === "/",
-                  }}
-                  className={[
-                    "rounded-full px-3.5 py-2",
-                    "text-[0.7rem] font-medium uppercase tracking-[0.13em]",
-                    "transition-colors hover:bg-white/30",
-                  ].join(" ")}
-                  activeProps={{
-                    className: "bg-white/35",
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ),
-            )}
-          </nav>
+                ) : (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    activeOptions={{
+                      exact: link.to === "/",
+                    }}
+                    className={[
+                      "flex h-[46px] items-center rounded-full px-4",
+                      "text-[0.65rem] font-medium uppercase",
+                      "tracking-[0.12em] text-black/75",
+                      "transition-all duration-300",
+                      "hover:bg-black hover:text-white",
+                    ].join(" ")}
+                    activeProps={{
+                      className: "!bg-black !text-white",
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                ),
+              )}
+            </nav>
+          </div>
 
-          {/* Desktop actions */}
-          <div className="hidden items-center gap-2 lg:flex">
+          {/* =========================
+              RIGHT ACTION PILL
+          ========================== */}
+          <div
+            className={[
+              "hidden h-[58px] items-center gap-1 rounded-full",
+              "border border-white/35 p-1.5 pl-2",
+              "backdrop-blur-2xl backdrop-saturate-150",
+              "transition-all duration-500 lg:flex",
+              scrolled
+                ? "bg-white/80 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)]"
+                : "bg-white/35 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.35)]",
+            ].join(" ")}
+          >
             <Link
               to="/favorites"
               aria-label="Saved stays"
-              className="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-white/30"
+              className={[
+                "grid h-[44px] w-[44px] place-items-center",
+                "rounded-full text-black",
+                "transition-all duration-300",
+                "hover:bg-black hover:text-white",
+              ].join(" ")}
             >
-              <Heart size={17} />
+              <Heart size={17} strokeWidth={1.7} />
             </Link>
 
             <Link
               to="/booking"
               className={[
-                "inline-flex h-10 items-center rounded-full px-5",
-                "border border-white/50 bg-white/55 text-black",
-                "text-[0.68rem] font-medium uppercase tracking-[0.15em]",
-                "shadow-sm backdrop-blur-xl",
-                "transition-colors hover:bg-white/80",
+                "flex h-[44px] items-center rounded-full",
+                "bg-black px-5 text-white",
+                "text-[0.63rem] font-medium uppercase",
+                "tracking-[0.15em]",
+                "transition-all duration-300",
+                "hover:scale-[1.02] hover:bg-black/80",
               ].join(" ")}
             >
               Plan your stay
             </Link>
           </div>
 
-          {/* Mobile menu button */}
+          {/* MOBILE PILL */}
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-white/30 lg:hidden"
             aria-label="Open menu"
             aria-expanded={open}
+            className={[
+              "grid h-[52px] w-[52px] place-items-center rounded-full",
+              "border border-white/35",
+              "text-black backdrop-blur-2xl",
+              "transition-all duration-300",
+              "hover:bg-white/80 lg:hidden",
+              scrolled
+                ? "bg-white/80 shadow-lg"
+                : "bg-white/35",
+            ].join(" ")}
           >
-            <Menu size={21} />
+            <Menu size={20} strokeWidth={1.8} />
           </button>
         </div>
       </header>
 
-      {/* Glassy mobile menu */}
+      {/* =========================
+          MOBILE MENU
+      ========================== */}
       {open && (
-        <div
-          className={[
-            "fixed inset-0 z-50 p-3 sm:p-5 lg:hidden",
-            "bg-black/10 backdrop-blur-md",
-          ].join(" ")}
-        >
+        <div className="fixed inset-0 z-[100] bg-black/25 p-3 backdrop-blur-md lg:hidden">
           <div
             className={[
-              "mx-auto flex h-full max-w-lg flex-col overflow-hidden",
-              "rounded-3xl border border-white/35 bg-white/20 text-black",
-              "shadow-[0_30px_90px_-25px_rgba(0,0,0,0.5)]",
-              "backdrop-blur-2xl backdrop-saturate-150",
+              "mx-auto flex h-full max-w-lg flex-col",
+              "overflow-hidden rounded-[32px]",
+              "border border-white/50 bg-white/90",
+              "shadow-[0_30px_100px_-20px_rgba(0,0,0,0.45)]",
+              "backdrop-blur-3xl",
             ].join(" ")}
           >
-            {/* Mobile menu heading */}
-            <div className="flex h-[4.5rem] items-center justify-between border-b border-white/30 px-5">
+            {/* MOBILE HEADER */}
+            <div className="flex items-center justify-between px-5 py-5">
               <Link
                 to="/"
                 onClick={() => setOpen(false)}
@@ -246,7 +337,7 @@ export function Nav({ transparent: _transparent = false }: NavProps) {
                 <img
                   src={logo}
                   alt="Zabibu"
-                  className="h-10 w-10 rounded-full object-cover ring-1 ring-white/60"
+                  className="h-11 w-11 rounded-full object-cover"
                 />
 
                 <div>
@@ -254,7 +345,7 @@ export function Nav({ transparent: _transparent = false }: NavProps) {
                     Zabibu
                   </span>
 
-                  <span className="mt-1 block text-[0.55rem] uppercase tracking-[0.24em] opacity-60">
+                  <span className="mt-1 block text-[0.52rem] uppercase tracking-[0.25em] text-black/45">
                     Collection
                   </span>
                 </div>
@@ -265,94 +356,96 @@ export function Nav({ transparent: _transparent = false }: NavProps) {
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
                 className={[
-                  "grid h-10 w-10 place-items-center rounded-full",
-                  "border border-white/35 bg-white/25",
-                  "transition-all hover:rotate-90 hover:bg-white/45",
+                  "grid h-11 w-11 place-items-center rounded-full",
+                  "bg-black text-white",
+                  "transition-transform duration-300",
+                  "hover:rotate-90",
                 ].join(" ")}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Mobile navigation links */}
-            <nav
-              aria-label="Mobile navigation"
-              className="flex flex-1 flex-col justify-between overflow-y-auto px-5 py-7"
-            >
-              <ul className="space-y-0.5">
+            {/* MOBILE LINKS */}
+            <nav className="flex flex-1 flex-col overflow-y-auto px-4 pb-5">
+              <div className="rounded-[28px] bg-black/[0.035] p-2">
                 {links.map((link, index) => (
-                  <li
+                  <Link
                     key={link.to}
-                    className="border-b border-white/30"
-                  >
-                    <Link
-                      to={link.to}
-                      onClick={() => setOpen(false)}
-                      className={[
-                        "group flex items-center justify-between rounded-xl px-2 py-3",
-                        "font-display text-3xl transition-colors hover:bg-white/25",
-                        "sm:text-4xl",
-                      ].join(" ")}
-                    >
-                      <span>{link.label}</span>
-
-                      <span className="font-sans text-[0.62rem] tracking-[0.18em] opacity-50">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-
-                <li className="border-b border-white/30">
-                  <Link
-                    to="/favorites"
+                    to={link.to}
                     onClick={() => setOpen(false)}
                     className={[
-                      "flex items-center justify-between rounded-xl px-2 py-3",
-                      "font-display text-3xl transition-colors hover:bg-white/25",
-                      "sm:text-4xl",
+                      "group flex items-center justify-between",
+                      "rounded-[20px] px-4 py-3.5",
+                      "transition-all duration-300",
+                      "hover:bg-black hover:text-white",
                     ].join(" ")}
                   >
-                    Saved stays
-                    <Heart size={19} />
-                  </Link>
-                </li>
+                    <span className="font-display text-[1.65rem]">
+                      {link.label}
+                    </span>
 
-                <li className="border-b border-white/30">
-                  <Link
-                    to="/list-your-property"
-                    onClick={() => setOpen(false)}
-                    className={[
-                      "flex items-center justify-between rounded-xl px-2 py-3",
-                      "font-display text-3xl transition-colors hover:bg-white/25",
-                      "sm:text-4xl",
-                    ].join(" ")}
-                  >
-                    List your property
-                    <span className="font-sans text-[0.62rem] tracking-[0.18em] opacity-50">
-                      08
+                    <span className="text-[0.58rem] tracking-[0.18em] opacity-40">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                   </Link>
-                </li>
-              </ul>
+                ))}
 
-              {/* Mobile menu bottom */}
-              <div className="pt-8">
+                <Link
+                  to="/favorites"
+                  onClick={() => setOpen(false)}
+                  className={[
+                    "flex items-center justify-between",
+                    "rounded-[20px] px-4 py-3.5",
+                    "transition-all duration-300",
+                    "hover:bg-black hover:text-white",
+                  ].join(" ")}
+                >
+                  <span className="font-display text-[1.65rem]">
+                    Saved stays
+                  </span>
+
+                  <Heart size={18} />
+                </Link>
+
+                <Link
+                  to="/list-your-property"
+                  onClick={() => setOpen(false)}
+                  className={[
+                    "flex items-center justify-between",
+                    "rounded-[20px] px-4 py-3.5",
+                    "transition-all duration-300",
+                    "hover:bg-black hover:text-white",
+                  ].join(" ")}
+                >
+                  <span className="font-display text-[1.65rem]">
+                    List your property
+                  </span>
+
+                  <span className="text-[0.58rem] tracking-[0.18em] opacity-40">
+                    08
+                  </span>
+                </Link>
+              </div>
+
+              {/* MOBILE BOTTOM */}
+              <div className="mt-auto pt-5">
                 <Link
                   to="/booking"
                   onClick={() => setOpen(false)}
                   className={[
-                    "flex h-12 w-full items-center justify-center rounded-full",
-                    "border border-white/50 bg-white/55 text-black",
-                    "text-[0.72rem] font-medium uppercase tracking-[0.16em]",
-                    "shadow-sm backdrop-blur-xl",
-                    "transition-colors hover:bg-white/80",
+                    "flex h-14 w-full items-center justify-center",
+                    "rounded-full bg-black text-white",
+                    "text-[0.68rem] font-medium uppercase",
+                    "tracking-[0.17em]",
+                    "transition-transform duration-300",
+                    "hover:scale-[0.98]",
                   ].join(" ")}
                 >
                   Plan your stay
                 </Link>
 
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs opacity-60">
+                <div className="mt-5 flex flex-col gap-1 px-2 text-xs text-black/45">
                   <span>{siteConfig.contact.email}</span>
                   <span>{siteConfig.contact.phone}</span>
                 </div>
